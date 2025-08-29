@@ -1,7 +1,7 @@
 const people = document.getElementById('peopleList')
 const form = document.getElementById('fish')
 
-const API_URL = "https://crudcrud.com/api/531b31877b6145e08df327bb81ab5e48/people"
+const API_URL = "https://crudcrud.com/api/4f03b845bae34f9e83cf73a916406d5f/people"
 
 // array local
 let localUsers = JSON.parse(localStorage.getItem("users")) || []
@@ -10,7 +10,7 @@ function saveLocal() {
   localStorage.setItem("users", JSON.stringify(localUsers))
 }
 
-// função pra criar li
+
 function criarLi(person) {
   const personItem = document.createElement('li')
   personItem.textContent = `${person.name} ${person.surname} ${person.email} `
@@ -59,17 +59,18 @@ form.addEventListener('submit', event => {
   const email = document.getElementById('email').value
 
   const newPerson = { name, surname, email }
-  localUsers.push(newPerson)
-  saveLocal()
-
-  const personItem = criarLi(newPerson)
-  people.appendChild(personItem)
 
   fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(newPerson)
-  }).catch(err => console.error(err))
+  })
+    .then(response => response.json())
+    .then(savedPerson => {
+      localUsers.push(savedPerson)
+      saveLocal()
+    })
+    .catch(err => console.error(err))
 
   form.reset()
 })
